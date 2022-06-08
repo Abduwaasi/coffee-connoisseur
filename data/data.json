@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "name": "Strangelove Coffee",
+    "imgUrl": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8Y29mZmVlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "websiteUrl": "https://www.strangelovecoffee.ca/",
+    "address": "983 Queen st E, Toronto, ON M4M 1k2",
+    "neighborhood": "at King and Spadina"
+  },
+  {
+    "id": 1,
+    "name": "Dark horse coffee",
+    "imgUrl": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Y29mZmVlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "websiteUrl": "https://www.darkhorseespresso.com/",
+    "address": "401, Richard st W",
+    "neighborhood": "Richard and spadina"
+  },
+  {
+    "id": 3000,
+    "name": "Router 3000 coffee",
+    "imgUrl": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Y29mZmVlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "websiteUrl": "https://www.darkhorseespresso.com/",
+    "address": "401, Richard st W",
+    "neighborhood": "Router 3000 coffee neighborhood"
+  }
+]
