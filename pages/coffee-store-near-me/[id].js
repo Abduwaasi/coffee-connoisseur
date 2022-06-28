@@ -20,52 +20,9 @@ const NearMe=()=>{
         console.log("handle upvote !")
     }
  
-    const router = useRouter()
-  const singleCoffee = coffeeStores.find(coffee=>coffee.fsq_id.toString()===router.query.id)
-  const {name,location,imgUrl,neighborhood}=singleCoffee
+  
     return <>
-    <Head>
-        <title>{name}</title>
-    </Head>
-     <Box as="main" py="5rem">
-         
-        <Flex sx={styles.container}>
-        <Flex sx={styles.col1}>
-           <Link href="/">
-                <Flex  align="center" my="1.2rem" gap="0.4rem" cursor="pointer">
-                  <Icon as={AiOutlineArrowLeft}/>
-                  <Text>Back to home page</Text>
-                </Flex>
-            </Link>
-          <Heading1 heading={name}/>
-          <CustomImage src={imgUrl || "https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8Y29mZmVlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"} alt={`${name} image`} width={500} height={400} borderRadius="12px"/>
-        </Flex>
-        <Flex sx={styles.col2}>
-        <Box sx={styles.col2.glass}>
-         <Flex sx={styles.col2.glass.flex}>
-         <Icon as ={GoLocation}/>
-         <Text sx={styles.col2.glass.text}>{location}</Text>
-         </Flex>
-         {neighborhood.length >0&& <Flex sx={styles.col2.glass.flex}>
-         <Icon as ={MdOutlineInvertColors}/>
-          {neighborhood.map((item,index)=>(<Text  key ={index} sx={styles.col2.glass.text}>{item}</Text>))    
-          }
-         
-         </Flex>}
-        
-         <Flex sx={styles.col2.glass.flex}>
-         <Icon as ={FiStar}/>
-         <Text sx={styles.col2.glass.text}>1</Text>
-         </Flex>
-         <Flex mt="1rem">
-         <Button colorScheme="blue" onClick={handleUpvote}> Up vote !</Button>
-         </Flex>
-        </Box> 
-        </Flex>
-        
-    </Flex>
-    </Box>
-    </>
+        </>
 }
 
 export default NearMe

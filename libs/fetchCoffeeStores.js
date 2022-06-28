@@ -28,9 +28,9 @@ export const fetchCoffeeStores= async(latLong="43.65267326999575,-79.39545615725
         }
       }
       try {
-        const response = await fetch(getCoffeeUrl(latLong,limit),options)
+        const response = await fetch(getCoffeeUrl(),options)
         const data = await response.json()
-        console.log(data)
+        // console.log(data)
         return data.results.map((result,index)=>{
          return{
            fsq_id:result.fsq_id,

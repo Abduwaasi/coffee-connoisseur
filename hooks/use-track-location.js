@@ -20,7 +20,7 @@ const useTrackLocation =()=>{
     }
     const error =()=>{
         setIsLoading(false)
-        setLatLong("")
+        // setLatLong("")
         setErrorMessage("Unable to retrieve your location")
     }
     const handleTrackLocation =()=>{

@@ -1,29 +1,139 @@
+import {useState,useEffect} from 'react'
 import {Box,Text,Flex,Heading,Icon, Button} from "@chakra-ui/react"
 import {useRouter} from "next/router"
 import Link from "next/link"
 import Head from "next/head"
-// import Image  from "next/image"
 import {AiOutlineArrowLeft} from "react-icons/ai"
 import {GoLocation} from "react-icons/go"
 import {MdOutlineInvertColors} from "react-icons/md"
 import {FiStar} from "react-icons/fi"
-// import coffeeStoreData from "../../data/data.json"
+import useSWR from 'swr'
+
 import CustomImage from "../../components/CustomImage"
 import Heading1 from "../../components/Heading1"
+import { fetcher,isEmpty } from "../../utils"
 
 import { fetchCoffeeStores } from "../../libs/fetchCoffeeStores"
 
 import { useGlobalContext } from "../../store/store-context"
 
-const DynamicStore=({unitCoffee})=>{
-    const {name,location,imgUrl,neighborhood}=unitCoffee
-    const {state:{latLong,coffeeStores}}=useGlobalContext()
-    const handleUpvote=()=>{
-        console.log("handle upvote !")
+export async function getStaticProps({params}){
+    const coffeeStores = await fetchCoffeeStores('43.65267326999575,-79.39545615725015',6)
+    const unitCoffeeStore = coffeeStores.find(coffeeStore=>coffeeStore.fsq_id.toString()===params.id)
+    return {
+        props:{
+            coffeeStore:unitCoffeeStore?unitCoffeeStore:{} 
+        }
     }
+  }
+  
+  export async function getStaticPaths(){
+      const coffeeStores = await fetchCoffeeStores('43.65267326999575,-79.39545615725015',6)
+      const paths = coffeeStores.map(item=>{
+          return {params:{id:item.fsq_id.toString()}}
+      })
+      return{
+          paths,
+          fallback:true
+      }
+  }
+  
+
+const DynamicStore=(initialProps)=>{
     const router = useRouter()
+    const id=router.query.id
+    const [coffeeStore, setCoffeeStore]= useState(initialProps.coffeeStore || {})
+    
+    const {state:{coffeeStores}}=useGlobalContext()
+    // console.log({coffeeStores})
+    const handleCreateCoffeeStores = async (coffeeStore)=>{
+        const {fsq_id,name,location,neighborhood,rating,imgUrl}=coffeeStore
+        const data ={
+            fsq_id,
+            name,
+            location:location||"",
+            neighborhood:neighborhood||["fakunle"],
+            rating:rating || 0,
+            imgUrl
+        }
+        try {
+            const response = await fetch("/api/createCoffeeStores",{
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body:JSON.stringify(data)
+            }) 
+            const dbCoffeeStore = await response.json()
+            console.log(dbCoffeeStore)
+
+        } catch (error) {
+        console.log("Error creating coffee store", error); 
+        }
+    }
+    
+    useEffect(()=>{
+     if(isEmpty(initialProps.coffeeStore)){
+         if(coffeeStores.length > 0){
+             const coffeeStoreFromContext = coffeeStores.find(coffeeStore=>{
+                 return coffeeStore.fsq_id.toString()===id
+             })
+             console.log({ coffeeStoreFromContext})
+             if(coffeeStoreFromContext){
+                 setCoffeeStore(coffeeStoreFromContext)
+                 handleCreateCoffeeStores(coffeeStoreFromContext)
+             }
+         }
+     }else{
+         handleCreateCoffeeStores(initialProps.coffeeStore)
+     }
+    },[id,initialProps,initialProps.coffeeStore])
+    const {   
+        name="",
+        location="",
+        neighborhood=[],
+        imgUrl="",
+      
+    }=coffeeStore
+
+    const [ratingValue, setRatingValue] = useState(0)
+    const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher)
+    useEffect(()=>{
+        if(data && data.length > 0){
+            console.log("data from SWR",data)
+            setCoffeeStore(data[0])
+            setRatingValue(data[0].rating)
+        }
+    },[data])
+    console.log({data})
+   
+    const handleUpvote= async ()=>{
+        try {
+            const response = await fetch("/api/upVoteCoffeeStoreById",{
+                method:"PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body:JSON.stringify({fsq_id:id})
+            }) 
+            const dbCoffeeStore = await response.json()
+            console.log({dbCoffeeStore})
+            if(dbCoffeeStore && dbCoffeeStore.length > 0){
+                let rating = ratingValue + 1
+                setRatingValue(rating)
+            }
+        
+
+        } catch (error) {
+        console.log("Error upvoting coffee store", error); 
+        }
+        
+    }
+    if(error){
+        return <Text>An error occoured while trying to fetch data fron SWR</Text>
+    }
     if(router.isFallback){
-        return  <Text>Loading...</Text>
+        return <Text>Loading...</Text>
     }
     return <>
     <Head>
@@ -50,21 +160,19 @@ const DynamicStore=({unitCoffee})=>{
          </Flex>
          {neighborhood.length >0&& <Flex sx={styles.col2.glass.flex}>
          <Icon as ={MdOutlineInvertColors}/>
-          {neighborhood.map((item,index)=>(<Text  key ={index} sx={styles.col2.glass.text}>{item}</Text>))    
+          {neighborhood&&<Text   sx={styles.col2.glass.text}>{neighborhood[0]}</Text>  
           }
          
          </Flex>}
-        
          <Flex sx={styles.col2.glass.flex}>
          <Icon as ={FiStar}/>
-         <Text sx={styles.col2.glass.text}>1</Text>
+         <Text sx={styles.col2.glass.text}>{ratingValue}</Text>
          </Flex>
          <Flex mt="1rem">
          <Button colorScheme="blue" onClick={handleUpvote}> Up vote !</Button>
          </Flex>
         </Box> 
         </Flex>
-        
     </Flex>
     </Box>
     </>
@@ -78,15 +186,16 @@ const styles = {
         flexDir:["column",,,"row"],
         alignItems:["flex-start",,,"center"],
         gap:"3rem",
-
+       
         
     },
     col1:{
         flexDir:"column",
-        flex:1
+        width:["100%"]
+    
     },
     col2:{
-        flex:1,
+        width:["100%"],
         glass:{
             background: 'hsla( 0, 0%, 100%,0.6 )',
             boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
@@ -110,27 +219,6 @@ const styles = {
         }
        
         
-    }
-}
-export async function getStaticProps({params}){
-  const coffeeStores = await fetchCoffeeStores('43.65267326999575,-79.39545615725015',6)
-  const unitCoffeeStore = coffeeStores.find(coffeeStore=>coffeeStore.fsq_id.toString()===params.id)
-  console.log("UNIT",unitCoffeeStore)
-  return {
-      props:{
-          unitCoffee:unitCoffeeStore?unitCoffeeStore:{} 
-      }
-  }
-}
-
-export async function getStaticPaths(){
-    const coffeeStores = await fetchCoffeeStores('43.65267326999575,-79.39545615725015',6)
-    const paths = coffeeStores.map(item=>{
-        return {params:{id:item.fsq_id.toString()}}
-    })
-    return{
-        paths,
-        fallback:true
     }
 }
 

@@ -14,10 +14,12 @@ import { ACTION_TYPES,useGlobalContext } from "../store/store-context";
 
 
 const Home = (props)=>{
-  const {errorMessage,isLoading,handleTrackLocation} = useTrackLocation()
+  const {errorMessage} = useTrackLocation()
   const [errors, setErrors] = useState(null)
 
   const{state:{latLong,coffeeStores},dispatch} =useGlobalContext()
+  console.log({latLong,coffeeStores})
+ 
   const styles = {
     container:{
       width:"100%",
@@ -32,7 +34,7 @@ const Home = (props)=>{
     if(latLong){
       try {
         const response= await fetch(`api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`)
-        const coffeeStores = await response.json()
+       const coffeeStores = await response.json()
        
         dispatch({
           type:ACTION_TYPES.SET_COFFEE_STORE,
@@ -42,12 +44,12 @@ const Home = (props)=>{
         
       } catch (error) {
         setErrors(errorMessage)
-        console.log({"Error":error})
+  
       }
   
     }
-     }, [latLong])
-// console.log("coffee stores",coffeeStores)
+     }, [dispatch,latLong])
+ 
   return <>
   
   <Head>
@@ -55,7 +57,7 @@ const Home = (props)=>{
   </Head>
   
   <Box as="main"sx={styles.container} >
-    <Header errorMessage={errorMessage} latLong={latLong} isLoading={isLoading} handleTrackLocation={handleTrackLocation}/>
+    <Header />
     {errorMessage&&<Text>Something went wrong: {errorMessage}</Text>}
     { coffeeStores.length>0&&<>
     <Heading1 heading="Coffee stores near me"/>
@@ -64,7 +66,7 @@ const Home = (props)=>{
         <CoffeeCard
         key={coffee.fsq_id}
         coffeeName={coffee.name}
-        href={`/coffee-store-near-me/${coffee.fsq_id}`}
+        href={`/coffee-store/${coffee.fsq_id}`}
         imgUrl={coffee.imgUrl || "https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8Y29mZmVlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"}
         />
       ))}
@@ -95,7 +97,7 @@ const Home = (props)=>{
 
 export async function getStaticProps(context){
 const data = await fetchCoffeeStores('43.65267326999575,-79.39545615725015',6)
-// console.log("DATA",data)  
+ 
 return {
     props:{
       data:data
