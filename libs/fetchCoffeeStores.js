@@ -15,7 +15,6 @@ const getListOfCoffeePhoto = async ()=>{
 }
 export const fetchCoffeeStores= async(latLong="43.65267326999575,-79.39545615725015",limit)=>{
     const photos = await getListOfCoffeePhoto()
-    // console.log("Photo", photos)
     const getCoffeeUrl=()=>{
         const baseUrl= "https://api.foursquare.com/v3/places/search"
         return `${baseUrl}?ll=${latLong}&query=coffee&radius=100000&limit=${limit}`
@@ -30,7 +29,6 @@ export const fetchCoffeeStores= async(latLong="43.65267326999575,-79.39545615725
       try {
         const response = await fetch(getCoffeeUrl(),options)
         const data = await response.json()
-        // console.log(data)
         return data.results.map((result,index)=>{
          return{
            fsq_id:result.fsq_id,

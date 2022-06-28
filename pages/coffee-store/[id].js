@@ -45,7 +45,7 @@ const DynamicStore=(initialProps)=>{
     const [coffeeStore, setCoffeeStore]= useState(initialProps.coffeeStore || {})
     
     const {state:{coffeeStores}}=useGlobalContext()
-    // console.log({coffeeStores})
+
     const handleCreateCoffeeStores = async (coffeeStore)=>{
         const {fsq_id,name,location,neighborhood,rating,imgUrl}=coffeeStore
         const data ={
@@ -65,7 +65,6 @@ const DynamicStore=(initialProps)=>{
                   body:JSON.stringify(data)
             }) 
             const dbCoffeeStore = await response.json()
-            console.log(dbCoffeeStore)
 
         } catch (error) {
         console.log("Error creating coffee store", error); 
@@ -78,7 +77,6 @@ const DynamicStore=(initialProps)=>{
              const coffeeStoreFromContext = coffeeStores.find(coffeeStore=>{
                  return coffeeStore.fsq_id.toString()===id
              })
-             console.log({ coffeeStoreFromContext})
              if(coffeeStoreFromContext){
                  setCoffeeStore(coffeeStoreFromContext)
                  handleCreateCoffeeStores(coffeeStoreFromContext)
@@ -100,12 +98,10 @@ const DynamicStore=(initialProps)=>{
     const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher)
     useEffect(()=>{
         if(data && data.length > 0){
-            console.log("data from SWR",data)
             setCoffeeStore(data[0])
             setRatingValue(data[0].rating)
         }
     },[data])
-    console.log({data})
    
     const handleUpvote= async ()=>{
         try {

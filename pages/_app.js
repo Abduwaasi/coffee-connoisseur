@@ -6,7 +6,6 @@ import AppProvider from "../store/store-context"
  
 
 function MyApp({ Component, pageProps }) {
-// console.log(themes)
   return <AppProvider>
           <ChakraProvider theme={themes}>
             <Component {...pageProps} />

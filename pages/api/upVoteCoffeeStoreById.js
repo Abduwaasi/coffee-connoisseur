@@ -9,7 +9,6 @@ const upVoteCoffeeStoreById = async(req,res)=>{
                 if(records.length !==0){
                     const record = records[0]
                     const calculateRating= parseInt(record.rating + 1)
-                    console.log({calculateRating})
 
                     // Update a Record
                     const updateRecord = await table.update([
@@ -29,7 +28,6 @@ const upVoteCoffeeStoreById = async(req,res)=>{
                 }
             }
         } catch (error) {
-            console.log("error",error)
             res.status(500).json({message:"Error while attempting to update coffee store",error})
         }
     }

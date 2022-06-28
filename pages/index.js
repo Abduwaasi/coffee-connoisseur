@@ -18,7 +18,6 @@ const Home = (props)=>{
   const [errors, setErrors] = useState(null)
 
   const{state:{latLong,coffeeStores},dispatch} =useGlobalContext()
-  console.log({latLong,coffeeStores})
  
   const styles = {
     container:{
